@@ -120,7 +120,7 @@ print("test 4")
 
 while True:
     if left10sensor() == True and right10sensor() == True and frontsensor() == False:
-        if left5sensor():
+        if left5sensor() == True:
             move_right()
         else:
             move_left()
