@@ -1,0 +1,143 @@
+import time as time
+import RPi.GPIO as GPIO
+#Set GPIO pin numbering
+GPIO.setmode(GPIO.BCM)
+
+#Intialize right side pins
+GPIO.setup(27, GPIO.OUT) #1EN
+GPIO.setup(2, GPIO.OUT)  #1A
+GPIO.setup(3, GPIO.OUT)  #1B
+
+#Initialize left side pins
+GPIO.setup(22, GPIO.OUT) #2EN
+GPIO.setup(4, GPIO.OUT)  #2A
+GPIO.setup(17, GPIO.OUT) #2B
+
+#Set GPIO pin numbering
+GPIO.setmode(GPIO.BCM)
+
+#Right 10cm sensor
+GPIO.setup(6, GPIO.IN)
+
+#Left 10cm Sensor
+GPIO.setup(5, GPIO.IN)
+
+#Right 5cm Sensor
+GPIO.setup(15, GPIO.IN)
+
+#Left 5cm Sensor
+GPIO.setup(14, GPIO.IN)
+
+#Front 10cm Sensor
+GPIO.setup(18, GPIO.IN)
+
+def move_forward():
+    GPIO.output(27, 1)
+    GPIO.output(2, 1)
+    GPIO.output(3, 0)
+    GPIO.output(22, 1)
+    GPIO.output(4, 0)
+    GPIO.output(17, 1)
+    #time.sleep(.87)
+    #GPIO.output(27, 0)
+    #GPIO.output(2, 0)
+    #GPIO.output(3, 0)
+    #GPIO.output(22, 0)
+    #GPIO.output(4, 0)
+    #GPIO.output(17, 0)
+    #time.sleep(0.2)
+
+def move_right():
+    GPIO.output(27, 1)
+    GPIO.output(2, 1)
+    GPIO.output(3, 0)
+    GPIO.output(22, 1)
+    GPIO.output(4, 1)
+    GPIO.output(17, 0)
+
+def move_left():
+    GPIO.output(27, 1)
+    GPIO.output(2, 0)
+    GPIO.output(3, 1)
+    GPIO.output(22, 1)
+    GPIO.output(4, 0)
+    GPIO.output(17, 1)
+
+def stop():
+    GPIO.output(27, 0)
+    GPIO.output(2, 0)
+    GPIO.output(3, 0)
+    GPIO.output(22, 0)
+    GPIO.output(4, 0)
+    GPIO.output(17, 0)
+
+def right90():
+    move_right()
+    time.sleep(0.35)
+    stop()
+
+def left90():
+    move_left()
+    time.sleep(0.35)
+    stop()
+
+def left180():
+    move_left()
+    time.sleep(0.7)
+    stop()
+
+def frontsensor():
+    if GPIO.input(18) == 1:
+        return False
+    else:
+        return True
+
+def right10sensor():
+    if GPIO.input(6) == 1:
+        return False
+    else:
+        return True
+
+def left10sensor():
+    if GPIO.input(5) == 1:
+        return False
+    else:
+        return True
+
+def right5sensor():
+    if GPIO.input(15) == 1:
+        return False
+    else:
+        return True
+
+def left5sensor():
+    if GPIO.input(14) == 1:
+        return False
+    else:
+        return True
+
+print("test 4")
+
+while True:
+    if left10sensor() == True and right10sensor() == True and frontsensor() == False:
+        if left5sensor():
+            move_right()
+        else:
+            move_left()
+        move_forward()
+    elif left10sensor() == True and right10sensor() == False:
+        move_forward()
+        time.sleep(0.4)
+        while left10sensor() == True and right10sensor() == False:
+            move_right()
+    elif left10sensor() == False and right10sensor() == True:
+        move_forward()
+        time.sleep(0.4)
+        while right10sensor() == True and left10sensor() == False:
+            move_left()
+    elif left10sensor() == True and right10sensor() == True and frontsensor() == True:
+        move_right()
+    elif left10sensor() == False and right10sensor() == False and frontsensor() == False:
+        move_forward()
+    else:
+        stop()
